@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 import java.io.Serializable;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,7 +12,7 @@ import lombok.Data;
  * ユーザー情報 リクエストデータ
  */
 @Data
-public class UserRequest implements Serializable {
+public class UserAddRequest implements Serializable {
   /**
 	 * 
 	 */
@@ -19,9 +20,11 @@ public class UserRequest implements Serializable {
   /**
    * 名前
    */
-  @NotEmpty(message = "名前を入力してください")
+  @NotBlank(message = "名前を入力してください")
   @Size(max = 100, message = "名前は100桁以内で入力してください")
   private String name;
+
+
   /**
    * 住所
    */
@@ -30,6 +33,17 @@ public class UserRequest implements Serializable {
   /**
    * 電話番号
    */
-  @Pattern(regexp = "0\\d{1,4}-\\d{1,4}-\\d{4}", message = "電話番号の形式で入力してください")
+  @NotBlank(message = "電話番号は必須です")
+  @Pattern(
+          regexp = "^(0\\d{1,4}-\\d{1,4}-\\d{4}|\\+\\d{1,14})$",
+          message = "電話番号は「0から始まるハイフン付き」または「+で始まる国際番号」で入力してください"
+  )
   private String phone;
+
+
+  /** バージョン（楽観ロック用） */
+  private Integer version;
+
+  private String country;
+
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>国籍登録/編集</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container mt-4">
+    <h2>国籍登録/編集</h2>
+    <form th:action="@{/admin/country/save}" th:object="${country}" method="post">
+        <div class="mb-3">
+            <label>Alpha-3コード（ISO）</label>
+            <input type="text" class="form-control" th:field="*{alpha3}" th:readonly="${country.alpha3 != null}" required>
+        </div>
+
+        <div class="mb-3">
+            <label>日本語名</label>
+            <input type="text" class="form-control" th:field="*{jaName}" required>
+        </div>
+
+        <div class="mb-3">
+            <label>英語名</label>
+            <input type="text" class="form-control" th:field="*{enName}" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">保存</button>
+        <a th:href="@{/admin/country/list}" class="btn btn-secondary">戻る</a>
+    </form>
+</div>
+</body>
+</html>

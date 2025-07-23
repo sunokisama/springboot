@@ -1,42 +1,65 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:th="http://www.thymeleaf.org">
-<head
-  th:replace="common/head :: head_fragment(title = 'ユーザー新規登録', scripts = ~{::script}, links = ~{::link})"></head>
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common/head :: head_fragment(title = #{user.create.title}, scripts = ~{::script}, links = ~{::link})}"></head>
 <body>
-  <div class="container">
-    <div th:if="${validationError}" th:each="error : ${validationError}">
-      <label class="text-danger" th:text="${error}"></label>
-    </div>
-    <h1>ユーザー新規登録</h1>
-    <form th:action="@{/user/create}" th:object="${userRequest}" th:method="post">
+<div class="container">
 
-      <div class="form-group">
-        <label>名前：<span class="text-danger">※</span></label>
-        <input type="text" th:field="*{name}" class="form-control">
-      </div>
-
-      <div class="form-group">
-        <label>住所：</label>
-        <input type="text" th:field="*{address}" class="form-control">
-      </div>
-
-      <div class="form-group">
-        <label>電話番号：<span class="text-danger">※</span></label>
-        <input type="text" th:field="*{phone}" class="form-control">
-      </div>
-      <br />
-      <div class="text-center">
-        <a href="/user/list" class="btn btn-secondary">キャンセル</a>
-        <input type="submit" value="　登録　" class="btn btn-primary">
-      </div>
-    </form>
-    <hr />
-
-    <!-- ランダムユーザー生成ボタン -->
-    <form th:action="@{/user/create/random}" method="post" style="text-align:center; margin-top: 20px;">
-      <input type="submit" value="ランダムユーザー作成" class="btn btn-success">
-    </form>
+  <!-- バリデーションエラー -->
+  <div th:if="${validationError}" th:each="error : ${validationError}">
+    <label class="text-danger" th:text="${error}"></label>
   </div>
+
+  <!-- ページタイトル -->
+  <h1 th:text="#{user.create.title}">ユーザー新規登録</h1>
+
+  <!-- 登録フォーム -->
+  <form th:action="@{/user/create}" th:object="${userRequest}" th:method="post">
+
+    <div class="form-group">
+      <label><span th:text="#{user.create.name}">名前</span>：<span class="text-danger">※</span></label>
+      <input type="text" th:field="*{name}" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label th:text="#{user.create.address}">住所：</label>
+      <input type="text" th:field="*{address}" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label th:text="#{user.create.country}">国籍：</label>
+      <select th:field="*{country}" class="form-control">
+        <option value="" th:text="#{user.list.option.choose}">-- 選択してください --</option>
+        <option th:each="c : ${countries}"
+                th:value="${c.alpha3}"
+                th:text="${#locale.language == 'ja'} ? ${c.jaName} : ${c.enName}">
+        </option>
+      </select>
+
+    </div>
+
+    <div class="form-group">
+      <label><span th:text="#{user.create.phone}">電話番号</span>：<span class="text-danger">※</span></label>
+      <input type="text" th:field="*{phone}" class="form-control">
+    </div>
+
+    <br />
+
+    <!-- ボタン -->
+    <div class="text-center">
+      <a href="/user/list" class="btn btn-secondary" th:text="#{user.create.button.cancel}">キャンセル</a>
+      <input type="submit" th:value="#{user.create.button.submit}" class="btn btn-primary">
+    </div>
+
+  </form>
+
+  <hr />
+
+  <!-- ランダムユーザー生成 -->
+  <form th:action="@{/user/create/random}" method="post" class="text-center mt-4">
+    <input type="submit" th:value="#{user.create.button.random}" class="btn btn-success" />
+  </form>
+
+</div>
 </body>
 </html>

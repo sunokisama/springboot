@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>国籍一覧</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container mt-4">
+    <h2>国籍一覧</h2>
+    <a class="btn btn-primary mb-3" th:href="@{/admin/country/add}">新規追加</a>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Alpha-3コード</th>
+            <th>日本語名</th>
+            <th>英語名</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="country : ${countries}">
+            <td th:text="${country.alpha3}"></td>
+            <td th:text="${country.jaName}"></td>
+            <td th:text="${country.enName}"></td>
+            <td>
+                <a th:href="@{'/admin/country/edit/' + ${country.alpha3}}" class="btn btn-warning btn-sm">編集</a>
+                <a th:href="@{'/admin/country/delete/' + ${country.alpha3}}"
+                   onclick="return confirm('本当に削除しますか？');"
+                   class="btn btn-danger btn-sm">削除</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
