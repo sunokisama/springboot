@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Data;
 
 /**
@@ -59,4 +60,12 @@ public class User implements Serializable {
    */
   @Column(name = "delete_date")
   private Date deleteDate;
+  /**
+   * バージョン
+   */
+  @Version
+  @Column(name = "version")
+  private Integer version;
+
+
 }

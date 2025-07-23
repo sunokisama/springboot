@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserMapper">
+
+    <!-- 全件検索 -->
+    <select id="findAll" resultType="com.example.demo.entity.User">
+        SELECT * FROM user ORDER BY id
+    </select>
+
+
+    <!-- 主キー検索 -->
+    <select id="findById" resultType="com.example.demo.entity.User">
+        SELECT * FROM user WHERE id=#{id} AND delete_date IS NULL
+    </select>
+
+    <select id="search" resultType="com.example.demo.entity.User">
+        SELECT * FROM user
+        WHERE 1 = 1
+        <choose>
+            <!-- IDが指定されたら、IDだけで検索する -->
+            <when test="id != null and id != ''">
+                AND id = #{id}
+            </when>
+            <!-- 名前又は住所が指定されたら、キーワードを含む名前又は住所で検索する -->
+            <otherwise>
+                <if test="name != null and name != ''">
+                    AND name LIKE CONCAT('%', #{name}, '%')
+                </if>
+                <if test="address != null and address != ''">
+                    AND address LIKE CONCAT('%', #{address}, '%')
+                </if>
+                <!-- 電話番号（記号無視） -->
+                <if test="phone != null and phone != ''">
+                    AND REPLACE(phone, '-', '') LIKE CONCAT(#{phone}, '%')
+                </if>
+            </otherwise>
+        </choose>
+        ORDER BY delete_date IS NULL DESC, id ASC
+    </select>
+
+
+    <!-- 新規登録 -->
+    <insert id="save">
+        INSERT INTO user
+            (name, address, phone, update_date, create_date)
+        VALUES
+            (#{name}, #{address}, #{phone}, CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP)
+    </insert>
+
+
+    <!-- 論理削除 -->
+    <update id="delete">
+        UPDATE user SET delete_date = CURRENT_TIMESTAMP WHERE id = #{id}
+    </update>
+
+    <update id="update" parameterType="com.example.demo.dto.UserUpdateRequest">
+        UPDATE user
+        SET
+        name = #{name},
+        address = #{address},
+        phone = #{phone},
+        update_date = NOW(),
+        version = version + 1
+        WHERE
+        id = #{id}
+        <if test="version != null">
+            AND version = #{version}
+        </if>
+    </update>
+
+
+
+
+</mapper>

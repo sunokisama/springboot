@@ -3,16 +3,17 @@ package com.example.demo.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
+import com.example.demo.dto.UserAddRequest;
+import com.example.demo.dto.UserSearchRequest;
+import com.example.demo.dto.UserUpdateRequest;
+import com.example.demo.mapper.UserMapper;
 import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.demo.dto.UserRequest;
 import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
 
 /**
  * ユーザー情報 Service
@@ -24,57 +25,67 @@ public class UserService {
    * ユーザー情報 Repository
    */
   @Autowired
-  private UserRepository userRepository;
+  private UserMapper userMapper;;
 
   /**
    * ユーザー情報 全検索
    * @return 検索結果
    */
-  public List<User> searchAll() {
-    return userRepository.findAll();
+  public List<User> findAll() {
+    return userMapper.findAll();
   }
 
-  /**
-   * ユーザー情報 新規登録
-   * @param userRequest ユーザー情報
-   */
-  public void create(UserRequest userRequest) {
-    Date now = new Date();
-    User user = new User();
-    user.setName(userRequest.getName());
-    user.setAddress(userRequest.getAddress());
-    user.setPhone(userRequest.getPhone());
-    user.setCreateDate(now);
-    user.setUpdateDate(now);
-    userRepository.save(user);
-  } // <-- createメソッドの閉じ括弧をここに追加
 
   public void createRandom() {
     Faker faker = new Faker(new Locale("ja")); // 生成日文数据
 
-    UserRequest userRequest = new UserRequest();
+    UserAddRequest userRequest = new UserAddRequest();
     userRequest.setName(faker.name().fullName());
     userRequest.setAddress(faker.address().fullAddress());
     userRequest.setPhone(faker.phoneNumber().cellPhone());
 
-    create(userRequest);
+    save(userRequest);
   }
 
   /**
-   * ユーザー情報 主キー検索
-   * @param id ユーザーID
+   * ユーザー情報主キー検索
    * @return 検索結果
    */
   public User findById(Long id) {
-    return userRepository.findById(id).get();
+    return userMapper.findById(id);
   }
 
   /**
-   * ユーザー情報 物理削除
-   * @param id ユーザーID
+   * ユーザー情報検索
+   * @param userSearchRequest リクエストデータ
+   * @return 検索結果
+   */
+  public List<User> search(UserSearchRequest userSearchRequest) {
+    return userMapper.search(userSearchRequest);
+  }
+
+
+  /**
+   * ユーザ情報登録
+   * @param userAddRequest リクエストデータ
+   */
+  public void save(UserAddRequest userAddRequest) {
+    userMapper.save(userAddRequest);
+  }
+
+  /**
+   * ユーザ情報更新
+   * @param userUpdateRequest リクエストデータ
+   */
+  public void update(UserUpdateRequest userUpdateRequest) {
+    userMapper.update(userUpdateRequest);
+  }
+
+  /**
+   * ユーザー情報論理削除
+   * @param id
    */
   public void delete(Long id) {
-    User user = findById(id);
-    userRepository.delete(user);
+    userMapper.delete(id);
   }
 }

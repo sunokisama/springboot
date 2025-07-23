@@ -11,7 +11,7 @@ import lombok.Data;
  * ユーザー情報 リクエストデータ
  */
 @Data
-public class UserRequest implements Serializable {
+public class UserAddRequest implements Serializable {
   /**
 	 * 
 	 */
@@ -32,4 +32,7 @@ public class UserRequest implements Serializable {
    */
   @Pattern(regexp = "0\\d{1,4}-\\d{1,4}-\\d{4}", message = "電話番号の形式で入力してください")
   private String phone;
+
+    /** バージョン（楽観ロック用） */
+    private Integer version;
 }
