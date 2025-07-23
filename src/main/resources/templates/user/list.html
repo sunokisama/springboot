@@ -1,39 +1,100 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common/head :: head_fragment(title = 'ユーザー情報一覧', scripts = ~{::script}, links = ~{::link})"></head>
+<head th:replace="~{common/head :: head_fragment(title = 'ユーザー情報一覧', scripts = ~{::script}, links = ~{::link})}"></head>
+
 <body>
-  <div class="container">
-    <h1>ユーザー情報一覧</h1>
-    <div class="float-end">
-      <a th:href="@{/user/add}" class="btn btn-primary">新規登録はこちら</a>
-    </div>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>名前</th>
-          <th>住所</th>
-          <th>電話番号</th>
-          <th>更新日時</th>
-          <th>登録日時</th>
-          <th>削除日時</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="user : ${userlist}" th:object="${user}" class="align-middle">
-          <td th:text="*{id}"></td>
-          <td th:text="*{name}"></td>
-          <td th:text="*{address}"></td>
-          <td th:text="*{phone}"></td>
-          <td th:text="${#dates.format(user.updateDate, 'yyyy/MM/dd')}"></td>
-          <td th:text="${#dates.format(user.createDate, 'yyyy/MM/dd')}"></td>
-          <td th:text="${#dates.format(user.deleteDate, 'yyyy/MM/dd')}"></td>
-          <td><a th:href="@{/user/{id}(id=*{id})}" class="btn btn-secondary">詳細</a></td>
-		  <td><a th:href="@{/user/{id}/delete(id=*{id})}" class="btn btn-danger">削除</a></td>
-        </tr>
-      </tbody>
-    </table>
+<div class="container">
+
+  <div class="float-end">
+    <form method="get" action="" id="langForm">
+      <select name="lang" onchange="document.getElementById('langForm').submit()" class="form-select">
+        <option value="ja" th:selected="${#locale.language == 'ja'}">日本語</option>
+        <option value="en" th:selected="${#locale.language == 'en'}">English</option>
+      </select>
+    </form>
   </div>
+
+  <h1 th:text="#{user.list.title}">ユーザー情報一覧</h1>
+  <div class="float-end">
+    <a th:href="@{/user/add}" class="btn btn-primary" th:text="#{user.list.button.new}">新規登録はこちら</a>
+  </div>
+
+  <form th:action="@{/user/list}" method="get" th:object="${searchForm}" class="mb-4">
+    <div class="row mb-2">
+      <div class="col-md-2">
+        <label>ID</label>
+        <input type="text" th:field="*{id}" class="form-control" />
+      </div>
+      <div class="col-md-4">
+        <label th:text="#{user.list.table.name}">名前</label>
+        <input type="text" th:field="*{name}" class="form-control" />
+      </div>
+      <div class="col-md-3">
+        <label th:text="#{user.list.table.address}">住所</label>
+        <input type="text" th:field="*{address}" class="form-control" />
+      </div>
+      <div class="col-md-3">
+        <th th:text="#{user.list.table.phone}">電話番号</th>
+        <input type="text" th:field="*{phone}" class="form-control" />
+      </div>
+      <div class="col-md-3">
+        <label th:text="#{user.list.table.country}">国籍</label>
+        <select th:field="*{country}" class="form-control">
+          <option value="" th:text="#{user.list.option.choose}">-- 選択してください --</option>
+          <option th:each="c : ${countries}"
+                  th:value="${c.alpha3}"
+                  th:text="${#locale.language == 'ja'} ? ${c.jaName} : ${c.enName}">
+          </option>
+        </select>
+
+        </select>
+      </div>
+
+      <div class="col-md-2 align-self-end">
+        <button type="submit" class="btn btn-primary" th:text="#{user.list.button.search}">検索</button>
+      </div>
+    </div>
+  </form>
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th th:text="#{user.list.table.id}">ID</th>
+      <th th:text="#{user.list.table.name}">名前</th>
+      <th th:text="#{user.list.table.address}">住所</th>
+      <th th:text="#{user.list.table.country}">国籍</th>
+      <th th:text="#{user.list.table.phone}">電話番号</th>
+      <th th:text="#{user.list.table.updated}">更新日時</th>
+      <th th:text="#{user.list.table.created}">登録日時</th>
+      <th th:text="#{user.list.table.deleted}">削除日時</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${userlist}"
+        th:object="${user}"
+        th:classappend="*{deleteDate} != null ? 'table-secondary text-muted' : ''"
+        class="align-middle">
+
+      <td th:text="*{id}"></td>
+      <td th:text="*{name}"></td>
+      <td th:text="*{address}"></td>
+      <td th:text="*{country}"></td>
+      <td th:text="*{phone}"></td>
+      <td th:text="${#dates.format(user.updateDate, 'yyyy/MM/dd')}"></td>
+      <td th:text="${#dates.format(user.createDate, 'yyyy/MM/dd')}"></td>
+      <td th:text="*{deleteDate != null} ? ${#dates.format(user.deleteDate, 'yyyy/MM/dd')} : '-'"></td>
+
+
+      <!-- 操作列 -->
+      <td>
+        <a th:href="@{/user/{id}(id=*{id})}" class="btn btn-secondary" th:text="#{user.list.button.detail}">詳細</a>
+        <a th:if="*{deleteDate == null}" th:href="@{/user/{id}/delete(id=*{id})}" class="btn btn-danger" th:text="#{user.list.button.delete}">削除</a>
+      </td>
+    </tr>
+
+    </tbody>
+  </table>
+</div>
 </body>
 </html>

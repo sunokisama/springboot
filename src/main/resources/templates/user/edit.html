@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common/head :: head_fragment(title = #{user.edit.title}, scripts = ~{::script}, links = ~{::link})}"></head>
+
+<body>
+<div class="container">
+
+    <!-- バリデーションエラー -->
+    <div th:if="${validationError}" th:each="error : ${validationError}">
+        <label class="text-danger" th:text="${error}"></label>
+    </div>
+
+    <h1 th:text="#{user.edit.title}">ユーザー情報編集</h1>
+
+    <form th:action="@{/user/update}" th:object="${userUpdateRequest}" th:method="post">
+        <input type="hidden" th:field="*{id}" />
+
+        <div>
+            <!-- 名前 -->
+            <div class="row mx-md-n5">
+                <div class="col-2 pt-3 border bg-light">
+                    <span th:text="#{user.edit.name}">名前</span><span class="text-danger">※</span>
+                </div>
+                <div class="col py-2 border">
+                    <input type="text" class="form-control" th:field="*{name}">
+                </div>
+            </div>
+
+            <!-- 住所 -->
+            <div class="row mx-md-n5">
+                <div class="col-2 pt-3 border bg-light" th:text="#{user.edit.address}">住所</div>
+                <div class="col py-2 border">
+                    <input type="text" class="form-control" th:field="*{address}">
+                </div>
+            </div>
+
+            <!-- 国籍 -->
+            <div class="row mx-md-n5">
+                <div class="col-2 pt-3 border bg-light" th:text="#{user.edit.country}">国籍</div>
+                <div class="col py-2 border">
+                    <select th:field="*{country}" class="form-control">
+                        <option value="" th:text="#{user.list.option.choose}">-- 選択してください --</option>
+                        <option th:each="c : ${countries}"
+                                th:value="${c.alpha3}"
+                                th:text="${#locale.language == 'ja'} ? ${c.jaName} : ${c.enName}">
+                        </option>
+                    </select>
+
+                </div>
+            </div>
+
+            <!-- 電話番号 -->
+            <div class="row mx-md-n5">
+                <div class="col-2 pt-3 border bg-light">
+                    <span th:text="#{user.edit.phone}">電話番号</span><span class="text-danger">※</span>
+                </div>
+                <div class="col py-2 border">
+                    <input type="text" class="form-control" th:field="*{phone}">
+                </div>
+            </div>
+        </div>
+
+        <br />
+
+        <!-- ボタン -->
+        <div class="text-center">
+            <input type="submit" class="btn btn-primary" th:value="#{user.edit.button.save}" />
+            <a href="/user/list" class="btn btn-secondary" th:text="#{user.edit.button.cancel}">キャンセル</a>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>
